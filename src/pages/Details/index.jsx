@@ -4,49 +4,82 @@ import { Button } from '../../components/Button';
 import { Section } from '../../components/Section';
 import { Tag } from '../../components/Tag';
 import { ButtonText } from '../../components/ButtonText';
+import { api } from '../../services/api';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 export function Details() {
-  
+  const [data, setData] = useState(null)
+  const params = useParams();
+  const navigate = useNavigate();
+
+  const deleteNote = async() => {
+    try {
+      await api.delete(`/notes/${params.id}`)
+      alert("Nota deletada com sucesso!");
+      navigate("/");
+    } catch (error) {
+      alert("Erro ao deletar a nota!");
+    }
+  }
+
+  useEffect(() => {
+    async function fetchNote() {
+      const response = await api.get(`/notes/${params.id}`);
+
+      setData(response.data);
+    }
+
+    fetchNote();
+  }, [params.id])
+
   return(
     <Container>
       <Header />
 
-      <main>
-        <Content>
-          <ButtonText title="Excluir nota"/>
-          
-          <h1>Introdução ao React</h1>
+      {
+        data &&
+        <main>
+          <Content>
+            <ButtonText title="Excluir nota" onClick={deleteNote} />
+            
+            <h1>{data.title}</h1>
 
-          <p>
-            Lorem ipsum dolor sit amet consectetur 
-            adipisicing elit. Vel autem aliquam nisi perspiciatis vero. 
-            Voluptas dolore maxime earum cumque, 
-            aliquam quas eaque tempore aspernatur dolores vel molestiae fuga cum qui.
-            Lorem ipsum dolor sit amet consectetur 
-            adipisicing elit. Vel autem aliquam nisi perspiciatis vero. 
-            Voluptas dolore maxime earum cumque, 
-            aliquam quas eaque tempore aspernatur dolores vel molestiae fuga cum qui.
-          </p>
+            <p>{data.descriptions}</p>
 
-          <Section title ="Links úteis">
-            <Links>
-              <li>
-                <a href="#">https://www.rocketseat.com.br</a>
-              </li>
-              <li>
-                <a href="#">https://www.rocketseat.com.br</a>
-              </li>
-            </Links>
-          </Section>
+            {
+              data.links &&
+              <Section title ="Links úteis">
+                <Links>
+                  {
+                    data.links.map((link) => (
+                      <li key={String(link.id)}>
+                        <a href={link.url} target='blank'>{link.url}</a>
+                      </li>
+                    ))
+                  }
+                </Links>
+              </Section>
+            }
 
-          <Section title="Marcadores">
-            <Tag title="express"/>
-            <Tag title="node"/>
-          </Section>
+            {
+              data.tags && 
+              <Section title="Marcadores">
+                {
+                  data.tags.map((tag) => (
+                    <Tag key={String(tag.id)} title={tag.name}/>
+                  ))
+                }
+              </Section>
+            }
 
-          <Button title="Voltar" />
-        </Content>
-      </main>
+            <Link  to="/" >
+              <Button title="Voltar" />
+            </Link>
+
+          </Content>
+        </main>
+      }
     </Container>
   )
 }

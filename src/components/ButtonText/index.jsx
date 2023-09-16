@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import { Container } from './styles';
 
-export function ButtonText({ title, isActive = false, ...rest }) {
+export function ButtonText({ title, isActive = true, ...rest }) {
   return(
     <Container 
       type="button"
-      $isactive={isActive.toString()}
+      $isactive={isActive}
       {...rest}
     >
       {title}
