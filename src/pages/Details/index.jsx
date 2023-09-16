@@ -6,12 +6,16 @@ import { Tag } from '../../components/Tag';
 import { ButtonText } from '../../components/ButtonText';
 import { api } from '../../services/api';
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export function Details() {
   const [data, setData] = useState(null)
   const params = useParams();
   const navigate = useNavigate();
+
+  function handleBack() {
+    navigate(-1)
+  }
 
   const deleteNote = async() => {
     try {
@@ -73,9 +77,7 @@ export function Details() {
               </Section>
             }
 
-            <Link  to="/" >
-              <Button title="Voltar" />
-            </Link>
+            <Button title="Voltar" onClick={handleBack}/>
 
           </Content>
         </main>
